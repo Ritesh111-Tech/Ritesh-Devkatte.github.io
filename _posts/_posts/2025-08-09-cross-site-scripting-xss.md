@@ -1,5 +1,4 @@
-________________________________________
-Cross-Site Scripting (XSS) – A Complete Guide with Real-World Examples and Prevention and what I  know and also I shared my strategy . How I start finding this vulnerability in website with permission  ..
+~ Cross-Site Scripting (XSS) – A Complete Guide with Real-World Examples and Prevention and what I  know and also I shared my strategy . How I start finding this vulnerability in website with permission  ..
 Web applications are now at the heart of almost every business operation. But as they’ve grown more complex, they’ve also become increasingly attractive targets for cybercriminals.
 One of the most persistent—and dangerous—threats to web applications is Cross-Site Scripting (XSS).
 In this guide, we’ll explore what XSS is, how it works, notable real-world incidents, and—most importantly—how you can prevent it.
@@ -168,11 +167,26 @@ Each time, I followed the same ethical hacking process:
 2.	Test systematically.
 3.	Document everything.
 4.	Report vulnerabilities responsibly.
-________________________________________
+
+Cheatsheet = all script
+https://portswigger.net/web-security/cross-site-scripting/cheat-sheet.pdf
+
+ 
+ 📚 Learning Resources
+- [OWASP Web Security Testing Guide](https://owasp.org/www-project-web-security-testing-guide/)
+- [HackerOne Hacktivity](https://hackerone.com/hacktivity)
+- [PortSwigger Web Security Academy](https://portswigger.net/web-security)
+- [TryHackMe Labs](https://tryhackme.com)
+
+Reference lab:  DVWA, Juice Shop, HackTheBox .
+ ________________________________________
 Final Thoughts
 This journey taught me more than just XSS payloads — it taught me discipline, ethics, and problem-solving.
 Finding a vulnerability is exciting, but helping an organization fix it is far more rewarding.
 Security isn’t just about breaking things; it’s about making them stronger.
 ________________________________________
+
+ 
+
 
 
