@@ -40,6 +40,14 @@ Getting started in ethical hacking and bug bounty hunting involves:
 5. Joining bug bounty platforms – HackerOne, Bugcrowd, Intigriti, YesWeHack.
 6. Reporting responsibly – Write clear, reproducible vulnerability reports with remediation steps.
 
+ 
+Why I Keep Pushing:
+Curiosity fuels my passion to uncover how every system works, because true security is just an illusion.
+Keep learning, keep trying, and keep practicing—success comes to those who never give up.
+Explore new tools fearlessly, experiment boldly, and unlock the hidden secrets in every line of code.
+
+
+
 
 ## 📬 Contact
 
