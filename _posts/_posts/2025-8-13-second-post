@@ -1,0 +1,110 @@
+Subdomain Takeover — My Learning Journey
+
+Introduction
+Over the last couple of days, I went down the rabbit hole of subdomain takeover vulnerabilities.
+I didn’t go hacking on live targets (that would be illegal!), but I did spin up a safe lab to see how these bugs actually happen in the real world.
+
+It was a mix of curiosity, a bit of “what-if” thinking, and the usual late-night obsession that comes with learning something new in security.
+
+What Exactly Is a Subdomain Takeover?
+Picture this:
+
+You’ve got a subdomain like blog.example.com.
+Instead of hosting it yourself, you point it to an external service via a CNAME record.
+That external service account gets deleted or never claimed.
+An attacker swoops in, claims it, and now they control content served from your trusted domain.
+
+Why that’s scary:
+
+They can host anything they want (malware, phishing pages, scams).
+
+Users trust the domain, so they’re more likely to fall for it.
+
+Cookies, tokens, and private data can be stolen if the site isn’t locked down.
+
+How I Approached It
+
+Step 1 — Hunting for Subdomains
+I played with some popular tools: Subfinder, Amass, Sublist3r, httpx, and passive sources like VirusTotal.
+
+Step 2 — Understanding CNAME Records
+A CNAME record is basically a nickname in DNS — it says, “Hey, if you’re looking for this domain, go check that domain instead.”
+Example:
+blog.example.com → CNAME → myblog.github.io
+If myblog.github.io is free for anyone to register, that’s a sitting duck.
+
+Step 3 — Spotting Weak Links
+I used Subzy, which checks subdomains against known vulnerable services.
+Fed it my list of subdomains.
+Matched them with takeover-prone services.
+Found one that looked vulnerable — didn’t touch it.
+
+Step 4 — My Safe Lab Experiment (GitHub Pages)
+I recreated a takeover in a sandbox:
+
+Created a new GitHub repo.
+
+Added a CNAME file with a target subdomain.
+
+Turned on GitHub Pages.
+
+Saw how easy it would be to capture a subdomain if it pointed to an unclaimed site.
+
+The “Usual Suspects” — Services Often in Bug Reports
+
+GitHub Pages (username.github.io) — Repo deleted → attacker can claim it → host anything under your trusted domain.
+
+Heroku (herokuapp.com) — App deleted → attacker can reuse the name → phishing or scams.
+
+Amazon S3 (s3.amazonaws.com) — Deleted bucket → takeover possible → malicious file hosting or stealing uploads.
+
+AWS CloudFront (cloudfront.net) — Misconfigured or removed → altered content delivery.
+
+Cargo Collective (cargocollective.com) — Abandoned portfolios → fake identity or spam.
+
+Bitbucket (bitbucket.io) — Deleted repos → push fake open-source projects with malware.
+
+Shopify (myshopify.com) — Closed/inactive store → fake e-commerce scams.
+
+Tilda (tilda.ws) — Deleted site → scam landing pages.
+
+Fastly (fastly.net) — Unclaimed CDN endpoint → inject bad scripts.
+
+Pantheon (pantheonsite.io) — Deleted dev/test sites → leak internal content or plant malware.
+
+WordPress VIP (wpcomstaging.com) — Unused staging → leak unreleased content or secrets.
+
+Azure (azurewebsites.net) — Removed web app → phishing or fake login portals.
+
+Surge.sh (surge.sh) — Deleted static deployment → malicious replacement.
+
+Readme.io (readme.io) — Deleted docs → fake guides.
+
+Help Scout (helpscoutdocs.com) — Deleted support docs → mislead customers or collect sensitive info.
+
+Unbounce (unbouncepages.com) — Removed landing page → phishing disguised as real pages.
+
+My Go-To Learning Resources
+
+OWASP: Subdomain Takeover
+
+Can I Take Over XYZ? list of vulnerable services
+
+GitHub payload repos for lab-only testing
+
+Big Takeaways
+
+Audit your DNS records — old CNAMEs are silent time bombs.
+
+Kill or update DNS entries when deleting services.
+
+Automate checks — attackers can wait years.
+
+Always get permission before testing anything live.
+
+Final Note
+This is for educational purposes only.
+No live systems were touched, no rules were broken. Just me, my lab, and a lot of coffee.
+
+#bugbounty #websecurity #ethicalhacking #subdomaintakeover #owasp #vulnerabilityresearch
+
