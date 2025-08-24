@@ -153,3 +153,10 @@ When you find a SQLi vulnerability, your report must be clear and actionable.
     *   Regularly perform security testing and code reviews.
 
 Happy (and ethical) hunting!
+
+📚 Learning Resources
+OWASP Web Security Testing Guide
+HackerOne Hacktivity
+PortSwigger Web Security Academy
+TryHackMe Labs
+Reference lab: DVWA, Juice Shop, HackTheBox .
