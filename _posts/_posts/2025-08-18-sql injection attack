@@ -152,6 +152,8 @@ When you find a SQLi vulnerability, your report must be clear and actionable.
     *   Implement strict Input Validation and principle of least privilege for database accounts.
     *   Regularly perform security testing and code reviews.
 
+Article:https://medium.com/@5141142
+
 Happy (and ethical) hunting!
 
 📚 Learning Resources
@@ -160,3 +162,4 @@ HackerOne Hacktivity
 PortSwigger Web Security Academy
 TryHackMe Labs
 Reference lab: DVWA, Juice Shop, HackTheBox .
+
