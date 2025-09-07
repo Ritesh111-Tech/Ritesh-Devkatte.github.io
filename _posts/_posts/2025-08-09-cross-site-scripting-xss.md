@@ -186,7 +186,7 @@ Finding a vulnerability is exciting, but helping an organization fix it is far m
 Security isn’t just about breaking things; it’s about making them stronger.
 ________________________________________
 
- 
-
+ * Medium: https://medium.com/@5141142
+* LinkedIn: https://www.linkedin.com/in/ritesh-devkatte-189669321?
 
 
