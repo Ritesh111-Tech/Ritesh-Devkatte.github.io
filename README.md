@@ -52,5 +52,7 @@ Explore new tools fearlessly, experiment boldly, and unlock the hidden secrets i
 ## 📬 Contact
 
 * Email: [ritesh04022007@gmail.com](mailto:ritesh04022007@gmail.com)
-* LinkedIn: https://www.linkedin.com/in/ritesh-devkatte-189669321?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app
+* Medium: https://medium.com/@5141142
+* LinkedIn: https://www.linkedin.com/in/ritesh-devkatte-189669321?
+
 
