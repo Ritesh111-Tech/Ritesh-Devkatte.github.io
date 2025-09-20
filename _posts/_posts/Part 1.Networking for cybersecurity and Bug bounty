@@ -1,0 +1,250 @@
+### My Ethical Hacking Learning Journey: Networking Basics (Part 1 & 2 Combined)
+
+Hello everyone! I'm continuing my journey into ethical hacking, and today I'm combining my two-part deep dive into networking basics. As I shared in my intro post, networking is a cornerstone of the cyber field—essential for both attacking and defending systems, since most vulnerabilities are exploited over networks. In this combined post, I'll start with foundational concepts (Part 1: What is a network? Devices, structure, packets, IPs, protocols, and more) and then move into hands-on tools (Part 2: Key Windows commands like ipconfig, ping, and others). This is beginner-friendly, with explanations, examples, and why it matters for ethical hacking. My goal is to keep it clear and relatable, as I'm learning alongside you. Let's break it down!
+
+This builds on my series outline from earlier, focusing on reconnaissance and scanning prep. I'll reference timestamps for context: Part 1 was covered on September 21, 2025, at 02:38 AM IST, and Part 2 extends that with practical commands.
+
+### Part 1: Core Networking Concepts
+
+#### What is a Network?
+A network is a collection of interconnected devices (like computers, servers, phones, or IoT gadgets) that communicate and share resources. It allows data exchange, resource sharing (e.g., printers), and access to services (e.g., the internet). In simple terms, it's like a web of roads connecting cities—devices are the cities, and data is the traffic.
+
+In the cyber field, understanding networks helps identify vulnerabilities, like weak points in how data flows, which ethical hackers test to secure systems.
+
+#### How Devices are Connected?
+Devices connect via wired or wireless mediums:
+- **Wired**: Using cables like Ethernet (twisted-pair copper) or fiber optics for high-speed, reliable connections. Common in offices or data centers.
+- **Wireless**: Via radio waves, like Wi-Fi (IEEE 802.11 standards), Bluetooth, or cellular (4G/5G). Devices use antennas to send/receive signals.
+- **Connection Process**: Devices use protocols (rules) to establish links. For example, in a local network, a switch or router directs traffic. On the internet, data hops through multiple routers globally.
+
+Ethical hacking angle: Connections can be intercepted (e.g., man-in-the-middle attacks), so knowing this helps in sniffing or spoofing tests.
+
+#### Basic Network Structure
+Networks are structured in topologies (layouts) and types:
+- **Topologies**:
+  - Star: All devices connect to a central hub (switch/router)—common, easy to manage.
+  - Bus: Devices on a single cable—old-school, prone to failures.
+  - Ring: Devices in a loop—data circles until it reaches the destination.
+  - Mesh: Every device connects to others—redundant, used in high-availability setups.
+- **Types**:
+  - LAN (Local Area Network): Small area, like home/office.
+  - WAN (Wide Area Network): Large scale, like the internet.
+  - MAN (Metropolitan Area Network): City-wide.
+  - PAN (Personal Area Network): Personal devices, like Bluetooth.
+
+Basic structure: Devices → Switches (Layer 2) → Routers (Layer 3) → Internet. Models like OSI (7 layers) or TCP/IP (4 layers) describe how data moves logically.
+
+For hacking: Structure knowledge aids in mapping networks during reconnaissance.
+
+#### Data Packet
+A data packet is a small unit of data transmitted over a network. It's like an envelope: contains the message (payload), sender/receiver addresses, and control info.
+
+- **Structure**: Header (metadata like source/destination IP, sequence number) + Payload (actual data) + Trailer (error-checking like CRC).
+- **How it Works**: Data is broken into packets, sent, and reassembled at the destination. Protocols like IP handle routing.
+
+In ethical hacking: Packets can be captured/analyzed for exploits, like injecting malicious ones.
+
+#### IP Address
+An IP (Internet Protocol) address is a unique identifier for devices on a network, like a postal address. It enables routing data.
+
+- **Types**:
+  - IPv4: 32-bit, dotted decimal (e.g., 192.168.1.1). Limited to ~4 billion addresses.
+  - IPv6: See below.
+- **Assignment**: Static (manual) or Dynamic (via DHCP).
+
+Ethical use: IPs are scanned in tools like Nmap to find open ports.
+
+#### IPv6 and Loopback IP
+- **IPv6**: 128-bit address to replace IPv4's shortage. Written in hexadecimal with colons (e.g., 2001:0db8:85a3:0000:0000:8a2e:0370:7334). Supports ~340 undecillion addresses. Features: Built-in security (IPsec), auto-configuration, no NAT needed.
+- **Loopback IP**: Special address for testing on the same device. IPv4: 127.0.0.1 (localhost). IPv6: ::1. Data sent here loops back without leaving the device.
+
+Why for hacking: IPv6 is increasingly common; loopback tests local services without network exposure.
+
+#### All Classes and Rules of Reading IPv6
+IPv6 doesn't have "classes" like IPv4 (A-E based on first octet). Instead, it's classless with address types:
+- **Unicast**: One-to-one (global, unique local, link-local).
+- **Multicast**: One-to-many (e.g., ff00::/8 prefix).
+- **Anycast**: One-to-nearest (shared addresses).
+
+**Rules for Reading/Writing IPv6**:
+1. 128 bits in 8 groups of 4 hex digits, separated by colons (e.g., 2001:0db8:0000:0000:0000:ff00:0042:8329).
+2. Omit leading zeros in groups (2001:db8:0:0:0:ff00:42:8329).
+3. Compress consecutive zero groups with :: once (2001:db8::ff00:42:8329).
+4. Case-insensitive hex (A-F or a-f).
+5. No more than 8 groups; :: can't be at ends if not compressing fully.
+6. For IPv4 compatibility: ::ffff:192.168.1.1.
+
+Parsing tip: Expand :: to zeros for full view. Ethical hacking: IPv6 scanning differs; tools like Nmap support it.
+
+#### URL Basics
+A URL (Uniform Resource Locator) is an address for web resources. Structure: scheme://host:port/path?query#fragment.
+- **Scheme**: Protocol (http, https, ftp).
+- **Host**: Domain/IP (e.g., example.com).
+- **Port**: Optional (default 80 for http).
+- **Path**: Resource location (/page.html).
+- **Query**: Parameters (?id=123).
+- **Fragment**: Section (#section1).
+
+In hacking: URLs are used in reconnaissance (e.g., Google Dorking) or exploits like XSS.
+
+#### POP and IMAP
+Email protocols for retrieving messages:
+- **POP (Post Office Protocol)**: Downloads emails to local device, deletes from server (default). Port 110 (plain), 995 (SSL). Simple, offline access, but no sync across devices.
+- **IMAP (Internet Message Access Protocol)**: Keeps emails on server, syncs folders/read status. Port 143 (plain), 993 (SSL). Better for multiple devices.
+
+Hacking relevance: Weak configs can lead to interception; ethical tests check for secure setups (e.g., SSL).
+
+#### MAC Address Deep Dive and Their Classes
+MAC (Media Access Control) address is a 48-bit hardware identifier for network interfaces, like a device's fingerprint. Format: 6 hex pairs (e.g., 00:1A:2B:3C:4D:5E).
+
+- **Deep Dive**:
+  - Assigned by manufacturer (first 3 bytes OUI - Organizationally Unique Identifier).
+  - Used at Data Link layer (OSI Layer 2) for local network communication.
+  - Unicast (for single device) vs. Multicast/Broadcast.
+  - Can be spoofed (changed via software).
+
+- **Classes/Types**:
+  - **Globally Unique (EUI-48)**: Worldwide unique, from IEEE.
+  - **Locally Administered**: User-set, overrides global (bit 1 of first byte set to 1).
+  - **Unicast**: Even first byte (for one-to-one).
+  - **Multicast**: Odd first byte (for groups).
+  - **Broadcast**: All FFs (FF:FF:FF:FF:FF:FF) – sends to all.
+
+In ethical hacking: MAC spoofing evades filters; ARP poisoning manipulates MAC-IP mappings.
+
+#### All Important 20 Protocols and Their Ports with Explanations
+Here are 20 key protocols, their default ports, and brief explanations. These are must-knows for port scanning in ethical hacking (e.g., via Nmap). I've used a table for clarity.
+
+| Protocol | Port(s) | Explanation |
+|----------|---------|-------------|
+| HTTP | 80 | HyperText Transfer Protocol: Web page transfer (unsecured). Vulnerable to injection attacks. |
+| HTTPS | 443 | Secure HTTP with SSL/TLS: Encrypted web traffic. Essential for secure sites. |
+| FTP | 20/21 | File Transfer Protocol: Upload/download files. Port 21 control, 20 data. Often insecure. |
+| SSH | 22 | Secure Shell: Encrypted remote access/console. Replaces Telnet for safety. |
+| Telnet | 23 | Remote terminal access: Unencrypted, risky—avoid in production. |
+| SMTP | 25/465/587 | Simple Mail Transfer Protocol: Sending emails. 465/587 for secure variants. |
+| DNS | 53 | Domain Name System: Translates domains to IPs. Spoofing can redirect traffic. |
+| DHCP | 67/68 | Dynamic Host Configuration Protocol: Assigns IPs automatically. Server 67, client 68. |
+| TFTP | 69 | Trivial FTP: Simple file transfer, no auth—used in booting. |
+| SNMP | 161/162 | Simple Network Management Protocol: Monitors devices. Weak community strings exploitable. |
+| LDAP | 389/636 | Lightweight Directory Access Protocol: Directory services (e.g., Active Directory). 636 secure. |
+| SMB | 445 | Server Message Block: File/printer sharing (Windows). Ransomware targets it. |
+| RDP | 3389 | Remote Desktop Protocol: Remote Windows control. Needs strong auth. |
+| POP3 | 110/995 | Post Office Protocol v3: Email retrieval. 995 secure. Downloads to client. |
+| IMAP | 143/993 | Internet Message Access Protocol: Email access with server sync. 993 secure. |
+| NTP | 123 | Network Time Protocol: Syncs clocks. Can be amplified for DDoS. |
+| SIP | 5060/5061 | Session Initiation Protocol: VoIP setup. 5061 secure. Vulnerable to eavesdropping. |
+| MySQL | 3306 | Database protocol: SQL queries. Secure with auth to prevent injections. |
+| PostgreSQL | 5432 | Another SQL database protocol: Similar to MySQL, robust features. |
+| ICMP | N/A (Protocol 1) | Internet Control Message Protocol: Ping/error messages. Used in reconnaissance. |
+
+Note: Ports can be changed; these are defaults. In hacking, open ports reveal services to target.
+
+#### Network Traffic Analysis Using Wireshark
+Wireshark is a free packet analyzer for capturing and inspecting network traffic. Steps for basic analysis:
+1. **Install & Run**: Download from wireshark.org, start capture on an interface (e.g., Wi-Fi).
+2. **Capture Traffic**: Filter by IP/protocol (e.g., "http" or "ip.src == 192.168.1.1").
+3. **Analyze**:
+   - View packets: See headers (Ethernet, IP, TCP/UDP), payloads.
+   - Statistics: Hierarchy, conversations, flow graphs.
+   - Detect Issues: Look for anomalies like excessive SYN packets (DoS), unencrypted creds.
+4. **Export/Decode**: Save captures, decode protocols (e.g., HTTP requests).
+5. **Ethical Tips**: Use on your network or with permission—capturing others' traffic is illegal without consent.
+
+In ethical hacking: Wireshark helps in sniffing (e.g., ARP poisoning setups) or verifying exploits. Practice on VMs.
+
+### Part 2: Essential Windows Networking Commands
+
+Now that we've covered the theory, let's get practical with five fundamental Windows commands. These are go-to tools for reconnaissance, troubleshooting, and mapping networks—key skills for ethical hacking.
+
+#### 1. ipconfig
+**What it does**: This command displays the IP configuration for your Windows machine's network interfaces, including the IP address, subnet mask, and default gateway. It's a quick way to check how your device is set up on a network.
+
+- **Syntax**: `ipconfig`
+- **Example Output**:
+  ```
+  Windows IP Configuration
+     Ethernet adapter Ethernet:
+        IPv4 Address. . . . . . . . : 192.168.1.100
+        Subnet Mask . . . . . . . . : 255.255.255.0
+        Default Gateway . . . . . . : 192.168.1.1
+  ```
+- **How to use**: Open Command Prompt (type `cmd` in the Windows search bar) and type `ipconfig`. Press Enter to see the basic network details.
+- **Ethical hacking relevance**: Knowing your own IP or the target network's gateway is crucial for reconnaissance. For example, you can use the gateway IP to scan the router for open ports or misconfigurations during a pentest (with permission).
+
+#### 2. ipconfig /all
+**What it does**: This is an extended version of ipconfig, showing detailed configuration, including MAC address, DNS servers, DHCP status, and lease information.
+
+- **Syntax**: `ipconfig /all`
+- **Example Output**:
+  ```
+  Windows IP Configuration
+     Host Name . . . . . . . . . : MyLaptop
+     Physical Address. . . . . . : 00-1A-2B-3C-4D-5E
+     DHCP Enabled. . . . . . . . : Yes
+     IPv4 Address. . . . . . . . : 192.168.1.100
+     Subnet Mask . . . . . . . . : 255.255.255.0
+     Default Gateway . . . . . . : 192.168.1.1
+     DHCP Server . . . . . . . . : 192.168.1.1
+     DNS Servers . . . . . . . . : 8.8.8.8, 8.8.4.4
+  ```
+- **How to use**: In Command Prompt, type `ipconfig /all`. This gives a fuller picture of your network setup.
+- **Ethical hacking relevance**: The MAC address can be used for ARP spoofing (with tools like Cain & Abel), and DNS server details help identify potential DNS hijacking vulnerabilities. Knowing DHCP status aids in understanding how IPs are assigned in the network.
+
+#### 3. ping
+**What it does**: Tests connectivity between your device and another host (by IP or domain name) by sending ICMP echo requests and waiting for replies. It measures latency and confirms if a target is reachable.
+
+- **Syntax**: `ping [IP or hostname]` (e.g., `ping 8.8.8.8` or `ping google.com`)
+- **Example Output**:
+  ```
+  Pinging 8.8.8.8 with 32 bytes of data:
+  Reply from 8.8.8.8: bytes=32 time=15ms TTL=117
+  Reply from 8.8.8.8: bytes=32 time=14ms TTL=117
+  ```
+- **How to use**: Type `ping google.com` in Command Prompt to check if Google's server responds. Use `ping -n 10 [IP]` to send 10 packets instead of the default 4.
+- **Ethical hacking relevance**: Ping sweeps (e.g., with Nmap) identify live hosts in a network during reconnaissance. However, some firewalls block ICMP, so a failed ping doesn’t always mean a host is down.
+
+#### 4. netstat
+**What it does**: Displays active network connections, listening ports, and network statistics. It shows which services are running and their connection states (e.g., ESTABLISHED, LISTENING).
+
+- **Syntax**: `netstat -ano`
+  - `-a`: Shows all connections and listening ports.
+  - `-n`: Displays numerical IPs/ports (not resolved to names).
+  - `-o`: Shows the process ID (PID) owning the connection.
+- **Example Output**:
+  ```
+  Proto  Local Address          Foreign Address        State           PID
+  TCP    192.168.1.100:135     0.0.0.0:0              LISTENING       1234
+  TCP    192.168.1.100:49152   142.250.190.14:443    ESTABLISHED     5678
+  ```
+- **How to use**: Type `netstat -ano` in Command Prompt to see connections. Cross-reference PIDs with Task Manager to identify processes.
+- **Ethical hacking relevance**: Netstat reveals open ports (potential entry points) and suspicious connections. For example, an unknown process connecting to a remote IP could indicate malware, which ethical hackers investigate.
+
+#### 5. tracert
+**What it does**: Traces the route packets take to a destination, showing each hop (router) and latency. It helps map the network path and identify bottlenecks or failures.
+
+- **Syntax**: `tracert [IP or hostname]` (e.g., `tracert google.com`)
+- **Example Output**:
+  ```
+  Tracing route to google.com [142.250.190.14] over a maximum of 30 hops:
+  1    1 ms    <1 ms    <1 ms  192.168.1.1
+  2    5 ms     4 ms     5 ms  10.0.0.1
+  3   15 ms    14 ms    15 ms  203.0.113.1
+  ```
+- **How to use**: Type `tracert google.com` in Command Prompt to see the path to Google’s server. Each line is a router hop.
+- **Ethical hacking relevance**: Tracert maps network infrastructure, useful for identifying routers or firewalls during reconnaissance. If a hop drops packets, it might indicate a firewall, guiding further probing (e.g., with Nmap).
+
+#### Why These Concepts and Commands Matter for Ethical Hacking
+Together, these form the foundation for network reconnaissance—a key phase in ethical hacking. The concepts (e.g., packets, IPs, protocols) give the "why," while the commands provide the "how":
+- **ipconfig and ipconfig /all**: Tie into IP/MAC knowledge, helping understand setups for scanning.
+- **ping**: Builds on ICMP protocol to confirm live hosts.
+- **netstat**: Reveals ports from the protocols table, spotting attack vectors.
+- **tracert**: Maps structures like topologies, revealing weak points.
+
+For practice, I’m using these in virtual labs (e.g., TryHackMe) to stay legal. Always get permission before testing real networks!
+
+#### Wrapping Up
+Whew, that's a solid combined foundation on networking for ethical hacking—from theory to commands. It's simple but powerful for understanding device communication and spotting vulnerabilities. In my next post, I’ll explore tools like Nmap or Wireshark to build on this, or dive into scanning. If you have suggestions for resources or want to share your experiences, let me know in the comments. Thanks for following my journey, and I’ll keep sharing as I learn more about staying secure in the cyber world!
+
+Medium: https://medium.com/@5141142
+LinkedIn: https://www.linkedin.com/in/ritesh-devkatte-189669321?
