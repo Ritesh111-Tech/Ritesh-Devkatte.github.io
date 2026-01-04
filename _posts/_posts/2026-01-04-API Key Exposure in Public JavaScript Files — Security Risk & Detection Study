@@ -1,0 +1,188 @@
+# 🔐 API Key Exposure in JavaScript Files — Why It Matters & How I Learned to Detect It.
+
+APIs (Application Programming Interfaces) are the backbone of the modern internet. Almost every application you use — food delivery apps, maps, chats, fintech, streaming — relies on APIs to communicate securely between services.
+
+Because APIs are so powerful, they are usually protected using **API Keys**.
+If those keys accidentally get exposed (for example, inside a public JavaScript file), it can lead to **serious financial and security risks** for companies.
+
+This write-up documents my learning journey on:
+
+* what APIs are
+* why API keys matter
+* how services like Google Maps API work
+* how API leaks happen
+* and how I tested tools in Kali Linux to detect exposed keys responsibly
+
+> ⚠️ **Educational Purpose Only**
+> My intention is to understand security risks so developers can fix them — NOT to misuse exposed keys.
+
+
+## 🧠 What Is an API & Why Is It Important?
+
+An **API (Application Programming Interface)** allows two software systems to talk to each other.
+
+Common real-world examples:
+
+* Google Maps API → Track delivery locations
+* Payment APIs → Online transactions
+* ChatGPT API → AI features in apps
+* Email APIs → OTPs & notifications
+
+Without APIs, apps would not be able to exchange data or perform online services.
+
+
+## ⚙️ How Does an API Key Work?
+
+Most APIs require a **secret API key** to authenticate requests.
+
+Think of an API key as
+👉 **a password used by software to identify itself**
+
+When an app sends a request:
+
+```
+User → App → API Server
+```
+
+The request contains:
+
+* API key
+* Requested data
+* App identity
+
+If the key is valid → the API processes the request.
+
+So the API key must always stay **private and secure**.
+
+
+## 🗺 Example: How Google Maps API Works
+
+Many websites and apps use **Google Maps API** to:
+
+* display maps
+* calculate distance
+* track delivery drivers
+* show live location
+
+### Real-world examples
+
+* Swiggy / Zomato — delivery tracking
+* Uber — live route navigation
+* Real estate apps — property locations
+
+Developers integrate Google Maps API directly into their app or website.
+Each time the API is used, **the company is billed based on usage**.
+
+For example (not exact pricing):
+
+* Google CAPTCHA → around $2
+* Google Maps API → around $7 (usage-based)
+
+So if someone steals the API key and uses it heavily:
+
+👉 **the company pays the bill — not the attacker**
+
+This leads to real financial loss.
+
+
+## ❗ Why API Key Leaks Are Dangerous
+
+If API keys are exposed publicly, attackers may:
+
+* use paid services for free
+* abuse billing
+* access restricted features
+* impersonate legitimate apps
+
+This becomes a **financial + security risk**.
+
+### How API keys leak
+
+* hard-coded in public JavaScript files
+* uploaded to public GitHub repos
+* left inside debug/test builds
+* forgotten during development
+
+
+## 🔍 My Learning: Detecting API Keys in JavaScript Files
+
+As part of my cybersecurity learning journey, I explored how researchers detect exposed API keys — **ethically and responsibly**.
+
+I used tools in **Kali Linux** to scan public JavaScript files.
+
+---
+
+### 🛠 Tool 1 — Pinkerton (finding JavaScript files)
+
+Pinkerton helps locate JavaScript files used by a website.
+
+#### Install Pinkerton
+
+```
+git clone https://github.com/ankane/pinkerton.git
+cd pinkerton
+bundle install
+```
+
+#### Run Pinkerton
+
+```
+[pinkerton https://target-website.com]
+```
+
+This lists all JavaScript files loaded by the target website.
+
+> **Note:** I only test on legal and authorized targets.
+
+---
+
+### 🧪 Tool 2 — gmapsapiscanner (Google Maps API key testing)
+
+Once a key is identified, researchers check whether it is:
+
+* active
+* restricted
+* or misconfigured
+
+#### Install
+
+```
+git clone https://github.com/ozguralp/gmapsapiscanner.git
+cd gmapsapiscanner
+pip install -r requirements.txt
+```
+
+#### Run
+
+```
+python3 gmapsapiscanner.py -k YOUR_API_KEY
+```
+
+Results indicate if the key is:
+
+* Safe
+* Misconfigured
+* Exploitable
+
+## 🛡 Ethical Reminder
+
+I strictly follow:
+
+* I only analyze systems I own or have permission for
+* I never exploit vulnerabilities
+* I never cause financial loss
+* I report issues responsibly
+
+**Security research should protect users and companies — not harm them.**
+
+## 📚 Key Takeaways
+
+* APIs are everywhere
+* API keys are sensitive credentials
+* Exposed keys can cause financial & security damage
+* Developers must always restrict API keys
+* Regular security audits are essential.
+
+* Medium: https://medium.com/@5141142
+* LinkedIn: https://www.linkedin.com/in/ritesh-devkatte-189669321?
+
